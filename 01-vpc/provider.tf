@@ -6,10 +6,10 @@ terraform {
     }
   }
        backend "s3" {
-    bucket = "roboshop-state-dev"     
+    bucket = "roboshop-state-prod"     
     key    = "infra-vpc"
     region = "us-east-1"
-    dynamodb_table = "roboshop-locking-dev" 
+    dynamodb_table = "roboshop-locking-prod" 
   }
 }
 
@@ -17,3 +17,5 @@ provider "aws" {
    region = "us-east-1"
 
 }
+
+
