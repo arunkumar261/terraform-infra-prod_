@@ -1,0 +1,88 @@
+pipeline {
+    agent {
+        node {
+            label 'Agent-1'
+        }
+    }
+
+    
+
+    options {
+        timeout(time: 1, unit: 'HOURS')
+        disableConcurrentBuilds()
+        ansiColor('xterm')
+    }
+
+    stages {
+
+        stage(' DB & APP-ALB') {
+            parallel {
+                stage('DB') {
+                    steps {
+                        sh """
+                            cd 04-databases
+                            terraform init -reconfigure
+                            terraform destroy -auto-approve
+                        """
+                    }
+                }
+                stage('APP-ALB') {
+                    steps {
+                        sh """
+                            cd 05-app-alb
+                            terraform init -reconfigure
+                            terraform destroy -auto-approve
+                        """
+                    }
+                }
+
+            }
+        }
+
+        stage('VPN') {
+            steps {
+                sh """
+                    cd 03-vpn
+                    terraform init -reconfigure
+                    terraform destroy -auto-approve
+                """
+            }
+        }
+
+        stage('SG') {
+            steps {
+                sh """
+                    cd 02-sg
+                    terraform init -reconfigure
+                    terraform destroy -auto-approve
+                """
+            }
+        }
+
+        stage('VPC') {
+            steps {
+                sh """
+                    cd 01-vpc
+                    terraform init -reconfigure
+                    terraform destroy -auto-approve
+                """
+            }
+        }
+        
+        
+        
+
+      
+    }
+    post {
+        always {
+            echo 'I will say Hello always'
+        }
+        failure {
+            echo 'I will say not Hello only if the pipeline has failed'
+        }
+        success {
+            echo 'I will say Hello only if the pipeline is successful'
+        }
+    }
+}
