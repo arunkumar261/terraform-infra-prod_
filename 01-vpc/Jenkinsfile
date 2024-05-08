@@ -1,0 +1,162 @@
+// pipeline{
+//     agent{
+//         node{
+//             label 'Agent-1'
+//         }
+//     }
+
+//     parameters{
+//         choice(name:'action', choices:['apply', 'destroy'], description: "Choose wisely depends on requirement" )
+//     }
+
+//     options{
+//         timeout(time:1, unit:'HOURS')
+//         disableConcurrentBuilds()
+//     }
+
+//     stages{
+//         stage('Init'){
+//             steps{
+//                 sh """
+//                 cd 01-vpc
+//                 terraform init -reconfigure
+//                 """
+//             }
+//         }
+//         stage('plan'){
+//             steps{
+//                 sh """
+//                 cd 01-vpc
+//                 terraform plan
+//                 """
+//             }
+//         }
+//         stage('apply'){
+//             when{
+//                 expression {
+//                     params.action == 'apply'
+//                 }
+//             }
+//             input{
+//                 message 'Should we continue..?'
+//                 ok 'yes..U can Continue...'
+//             }
+//             steps{
+//                 sh """
+//                 cd 01-vpc
+//                 terraform apply -auto-approve
+//                 """
+//             }
+//         }
+//         stage('destroy'){
+//             when{
+//                 expression {
+//                     params.action == 'destroy'
+//                 }
+//             }
+//             input{
+//                 message 'Should we continue..?'
+//                 ok 'yes..U can Continue...'
+//             }
+//             steps{
+//                 sh """
+//                 cd 01-vpc
+//                 terraform destroy -auto-approve
+//                 """
+//             }
+//         }
+//     }
+//     post{
+//         always{
+//             echo 'I will say Hello always'
+//         }
+//         failure{
+//             echo 'I will say not Hello only if pipeline is Failed'
+//         }
+//         success{
+//             echo 'I will say Hello only if pipeline is Successfull'
+//         }
+//     }
+// }
+
+pipeline {
+    agent {
+        node {
+            label 'Agent-1'
+        }
+    }
+
+    parameters {
+        choice(name: 'action', choices: ['apply', 'destroy'], description: "Choose wisely depending on the requirement")
+    }
+
+    options {
+        timeout(time: 1, unit: 'HOURS')
+        disableConcurrentBuilds()
+        ansiColor('xterm')
+    }
+
+    stages {
+        stage('Init') {
+            steps {
+                sh """
+                cd 01-vpc
+                terraform init -reconfigure
+                """
+            }
+        }
+        stage('plan') {
+            steps {
+                sh """
+                cd 01-vpc
+                terraform plan
+                """
+            }
+        }
+        stage('apply') {
+            when {
+                expression {
+                    params.action == 'apply'
+                }
+            }
+            input {
+                message 'Should we continue..?'
+                ok 'yes..U can Continue...'
+            }
+            steps {
+                sh """
+                cd 01-vpc
+                terraform apply -auto-approve
+                """
+            }
+        }
+        stage('destroy') {
+            when {
+                expression {
+                    params.action == 'destroy'
+                }
+            }
+            input {
+                message 'Should we continue..?'
+                ok 'yes..U can Continue...'
+            }
+            steps {
+                sh """
+                cd 01-vpc
+                terraform destroy -auto-approve
+                """
+            }
+        }
+    }
+    post {
+        always {
+            echo 'I will say Hello always'
+        }
+        failure {
+            echo 'I will say not Hello only if the pipeline has failed'
+        }
+        success {
+            echo 'I will say Hello only if the pipeline is successful'
+        }
+    }
+}
