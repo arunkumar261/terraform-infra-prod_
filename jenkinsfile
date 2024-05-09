@@ -41,9 +41,31 @@ pipeline {
                 """
             }
         }
-        stage(' DB & APP-ALB') {
-            parallel {
-                stage('DB') {
+        // stage(' DB & APP-ALB') {
+        //     parallel {
+        //         stage('DB') {
+        //             steps {
+        //                 sh """
+        //                     cd 04-databases
+        //                     terraform init -reconfigure
+        //                     terraform apply -auto-approve
+        //                 """
+        //             }
+        //         }
+        //         stage('APP-ALB') {
+        //             steps {
+        //                 sh """
+        //                     cd 05-app-alb
+        //                     terraform init -reconfigure
+        //                     terraform apply -auto-approve
+        //                 """
+        //             }
+        //         }
+
+        //     }
+        // }
+
+        stage('DB') {
                     steps {
                         sh """
                             cd 04-databases
@@ -52,7 +74,7 @@ pipeline {
                         """
                     }
                 }
-                stage('APP-ALB') {
+        stage('APP-ALB') {
                     steps {
                         sh """
                             cd 05-app-alb
@@ -61,9 +83,6 @@ pipeline {
                         """
                     }
                 }
-
-            }
-        }
 
       
     }
