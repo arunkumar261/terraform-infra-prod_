@@ -5,6 +5,7 @@ module "roboshop_aws_vpc" {
   environment  = var.environment
   common_tags  = var.common_tags
   vpc_tags     = var.vpc_tags
+   vpc_cidr = var.vpc_cidr
 
   # For public subnet
   public_subnets_cidr = var.public_subnets_cidr
