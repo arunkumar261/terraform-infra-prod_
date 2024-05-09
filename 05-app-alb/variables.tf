@@ -15,7 +15,7 @@ variable "common_tags" {
 }
 
 variable "zone_name" {
-  default = "arunprod.online"
+  default = "arundev.online"
 }
 
 
